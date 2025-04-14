@@ -27,15 +27,20 @@ class FatigueInput(BaseModel):
 # Endpoint
 @app.post("/predict-fatigue")
 def predict_fatigue(data: FatigueInput):
-    # Create a DataFrame with the input data
+    # Create a DataFrame with the input data in the correct column order
     input_data = pd.DataFrame([{
-        'profile': data.user_profile,
         'screen_time_hours': data.screen_time_hours,
         'nighttime_use': data.nighttime_use,
         'app_switches': data.app_switches,
         'social_media_ratio': data.social_media_ratio,
-        'unlocks': data.unlocks
+        'unlocks': data.unlocks,
+        'profile': data.user_profile
     }])
+    
+    # Ensure columns are in the correct order
+    expected_columns = ['screen_time_hours', 'nighttime_use', 'app_switches', 
+                       'social_media_ratio', 'unlocks', 'profile']
+    input_data = input_data[expected_columns]
     
     # Make prediction
     prediction = model.predict(input_data)[0]
